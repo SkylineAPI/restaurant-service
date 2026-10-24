@@ -1,0 +1,19 @@
+{
+  "name": "restaurant-service",
+  "version": "1.0.0",
+  "description": "FoodExpress Restaurant Service - manages restaurants and their menus",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "test": "node --test test/*.test.js"
+  },
+  "dependencies": {
+    "express": "^4.21.2",
+    "mongoose": "^8.9.5",
+    "morgan": "^1.10.0"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "license": "MIT"
+}

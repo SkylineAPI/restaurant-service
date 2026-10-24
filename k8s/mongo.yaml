@@ -1,0 +1,58 @@
+# MongoDB - private database owned by the Restaurant Service (database-per-service pattern)
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: restaurant-mongo-pvc
+  namespace: foodexpress
+spec:
+  accessModes: [ReadWriteOnce]
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: restaurant-mongo
+  namespace: foodexpress
+  labels:
+    app: restaurant-mongo
+    tier: database
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: restaurant-mongo
+  template:
+    metadata:
+      labels:
+        app: restaurant-mongo
+        tier: database
+    spec:
+      containers:
+        - name: mongo
+          image: mongo:7
+          ports:
+            - containerPort: 27017
+          resources:
+            requests: { cpu: 100m, memory: 256Mi }
+            limits: { cpu: 500m, memory: 512Mi }
+          volumeMounts:
+            - name: data
+              mountPath: /data/db
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: restaurant-mongo-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: restaurant-mongo
+  namespace: foodexpress
+spec:
+  selector:
+    app: restaurant-mongo
+  ports:
+    - port: 27017
+      targetPort: 27017

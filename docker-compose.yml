@@ -1,0 +1,28 @@
+# Runs the Restaurant Service and its MongoDB as separate containers.
+# Creates the shared "foodexpress-net" network that order-service joins.
+services:
+  restaurant-mongo:
+    image: mongo:7
+    container_name: restaurant-mongo
+    volumes:
+      - mongo-data:/data/db
+    networks: [foodexpress-net]
+
+  restaurant-service:
+    build: .
+    image: restaurant-service:1.0.0
+    container_name: restaurant-service
+    environment:
+      PORT: "3000"
+      MONGO_URI: mongodb://restaurant-mongo:27017/restaurantdb
+    ports:
+      - "3000:3000"
+    depends_on: [restaurant-mongo]
+    networks: [foodexpress-net]
+
+volumes:
+  mongo-data:
+
+networks:
+  foodexpress-net:
+    name: foodexpress-net
